@@ -118,6 +118,21 @@ function(toolchain_deps toolchain_deps_dir toolchain_install_dir toolchain_suffi
         --disable-shared
         )
 
+    ExternalProject_add(mpc${suffix}
+        DEPENDS gmp${suffix} mpfr${suffix}
+        URL http://www.multiprecision.org/mpc/download/mpc-1.0.3.tar.gz
+        URL_HASH SHA256=617decc6ea09889fb08ede330917a00b16809b8db88c29c31bfbb49cbf88ecc3
+        DOWNLOAD_DIR ${DOWNLOAD_DIR}
+        CONFIGURE_COMMAND ${compiler_flags} ${wrapper_command} <SOURCE_DIR>/configure
+        --build=${build_native}
+        --host=${toolchain_host}
+        --prefix=${toolchain_deps_dir}
+        --libdir=${toolchain_deps_dir}/lib
+        --with-gmp=${toolchain_deps_dir}
+        --with-mpfr=${toolchain_deps_dir}
+        --disable-shared
+        )
+
     ExternalProject_Add(binutils${suffix}
         URL https://ftp.gnu.org/gnu/binutils/binutils-2.27.tar.bz2
         URL_HASH SHA256=369737ce51587f92466041a97ab7d2358c6d9e1b6490b3940eb09fb0a9a6ac88
@@ -212,7 +227,7 @@ set(common_gcc_configure_args
 
 # Build GCC
 ExternalProject_add(gcc-base
-    DEPENDS gmp_${build_suffix} mpfr_${build_suffix} binutils_${build_suffix}
+    DEPENDS gmp_${build_suffix} mpfr_${build_suffix} mpc_${build_suffix} binutils_${build_suffix}
     URL http://ftp.gnu.org/gnu/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.bz2
     URL_HASH ${GCC_HASH}
     DOWNLOAD_DIR ${DOWNLOAD_DIR}
