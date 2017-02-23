@@ -1,0 +1,35 @@
+--- gcc/config/mep/mep.c	(revision 231954)
++++ gcc/config/mep/mep.c	(working copy)
+@@ -2933,7 +2933,7 @@ mep_expand_epilogue (void)
+   /* This is backwards so that we restore the control and coprocessor
+      registers before the temporary registers we use to restore
+      them.  */
+-  for (i=FIRST_PSEUDO_REGISTER-1; i>=1; i--)
++  for (i=FIRST_PSEUDO_REGISTER-1; i>=0; i--)
+     if (mep_call_saves_register (i))
+       {
+ 	machine_mode rmode;
+@@ -3004,11 +3004,9 @@ mep_expand_epilogue (void)
+     emit_insn (gen_mep_enable_int ());
+ 
+   if (mep_prevent_lp_restore)
+-    {
+-      emit_jump_insn (gen_eh_return_internal ());
+-      emit_barrier ();
+-    }
+-  else if (interrupt_handler)
++    return;
++
++  if (interrupt_handler)
+     emit_jump_insn (gen_mep_reti ());
+   else
+     emit_jump_insn (gen_return_internal (gen_rtx_REG (SImode, lp_temp)));
+@@ -3025,6 +3023,8 @@ mep_expand_eh_return (rtx *operands)
+     }
+ 
+   emit_insn (gen_eh_epilogue (operands[0]));
++  emit_jump_insn (gen_eh_return_internal ());
++  emit_barrier ();
+ }
+ 
+ void
