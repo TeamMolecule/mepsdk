@@ -4,8 +4,8 @@ cmake_minimum_required(VERSION 2.8)
 project(mepsdk)
 
 # Use the following gcc version
-set(GCC_VERSION 6.2.0)
-set(GCC_HASH SHA256=9944589fc722d3e66308c0ce5257788ebd7872982a718aa2516123940671b7c5)
+set(GCC_VERSION 6.3.0)
+set(GCC_HASH SHA256=F06AE7F3F790FBF0F018F6D40E844451E6BC3B7BC96E128E63B09825C1F8B29F)
 
 # Location to save the downloaded tarballs. Can be overriden from command line.
 set(DOWNLOAD_DIR ${CMAKE_BINARY_DIR}/downloads CACHE PATH "Default download path for tarballs")
@@ -91,8 +91,8 @@ function(toolchain_deps toolchain_deps_dir toolchain_install_dir toolchain_suffi
     endif()
 
     ExternalProject_add(gmp${suffix}
-        URL https://gmplib.org/download/gmp/gmp-6.1.1.tar.bz2
-        URL_HASH SHA256=a8109865f2893f1373b0a8ed5ff7429de8db696fc451b1036bd7bdf95bbeffd6
+        URL https://gmplib.org/download/gmp/gmp-6.1.2.tar.bz2
+        URL_HASH SHA256=5275BB04F4863A13516B2F39392AC5E272F5E1BB8057B18AEC1C9B79D73D8FB2
         DOWNLOAD_DIR ${DOWNLOAD_DIR}
         CONFIGURE_COMMAND CPPFLAGS=-fexceptions ${compiler_flags} ${wrapper_command} <SOURCE_DIR>/configure
         --build=${build_native}
@@ -115,21 +115,6 @@ function(toolchain_deps toolchain_deps_dir toolchain_install_dir toolchain_suffi
         --prefix=${toolchain_deps_dir}
         --libdir=${toolchain_deps_dir}/lib
         --with-gmp=${toolchain_deps_dir}
-        --disable-shared
-        )
-
-    ExternalProject_add(mpc${suffix}
-        DEPENDS gmp${suffix} mpfr${suffix}
-        URL http://www.multiprecision.org/mpc/download/mpc-1.0.3.tar.gz
-        URL_HASH SHA256=617decc6ea09889fb08ede330917a00b16809b8db88c29c31bfbb49cbf88ecc3
-        DOWNLOAD_DIR ${DOWNLOAD_DIR}
-        CONFIGURE_COMMAND ${compiler_flags} ${wrapper_command} <SOURCE_DIR>/configure
-        --build=${build_native}
-        --host=${toolchain_host}
-        --prefix=${toolchain_deps_dir}
-        --libdir=${toolchain_deps_dir}/lib
-        --with-gmp=${toolchain_deps_dir}
-        --with-mpfr=${toolchain_deps_dir}
         --disable-shared
         )
 
@@ -227,7 +212,7 @@ set(common_gcc_configure_args
 
 # Build GCC
 ExternalProject_add(gcc-base
-    DEPENDS gmp_${build_suffix} mpfr_${build_suffix} mpc_${build_suffix} binutils_${build_suffix}
+    DEPENDS gmp_${build_suffix} mpfr_${build_suffix} binutils_${build_suffix}
     URL http://ftp.gnu.org/gnu/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.bz2
     URL_HASH ${GCC_HASH}
     DOWNLOAD_DIR ${DOWNLOAD_DIR}
