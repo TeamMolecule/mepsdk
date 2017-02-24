@@ -255,6 +255,16 @@ ExternalProject_add(gcc-base
     -P ${CMAKE_SOURCE_DIR}/cmake/remove_files.cmake
     )
 
+ExternalProject_add(libk
+    DEPENDS binutils_${build_suffix} gcc-base
+    GIT_REPOSITORY https://github.com/DaveeFTW/libk/
+    GIT_TAG mep
+
+	CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}/${target_arch}
+    BUILD_COMMAND $(MAKE)
+	INSTALL_COMMAND $(MAKE) install
+    )
+
 # Strip toolchain binaries to reduce filesize
 add_custom_command(TARGET gcc-base POST_BUILD
     COMMAND ${CMAKE_COMMAND} -DHOST_SYSTEM_NAME=${CMAKE_HOST_SYSTEM_NAME}
@@ -272,11 +282,11 @@ add_custom_command(TARGET gcc-base POST_BUILD
     COMMENT "Stripping host binaries"
     )
 
-
 add_custom_command(OUTPUT "mepsdk-${host_native}-${build_date}.tar.bz2"
     COMMAND ${CMAKE_COMMAND} -E tar "cfvj" "mepsdk-${host_native}-${build_date}.tar.bz2" "${CMAKE_INSTALL_PREFIX}"
     DEPENDS binutils_${target_suffix}
     DEPENDS gcc-base
+    DEPENDS libk
     COMMENT "Creating mepsdk-${host_os}-${build_date}.tar.bz2"
     )
 
