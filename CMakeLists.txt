@@ -260,7 +260,7 @@ ExternalProject_add(libk
     GIT_REPOSITORY https://github.com/DaveeFTW/libk/
     GIT_TAG mep
 
-	CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}/${target_arch}
+	CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}/${target_arch} -DMEPSDK=${CMAKE_INSTALL_PREFIX}
     BUILD_COMMAND $(MAKE)
 	INSTALL_COMMAND $(MAKE) install
     )
