@@ -5,7 +5,7 @@ project(mepsdk)
 
 # Use the following gcc version
 set(GCC_VERSION 6.3.0)
-set(GCC_HASH SHA256=F06AE7F3F790FBF0F018F6D40E844451E6BC3B7BC96E128E63B09825C1F8B29F)
+set(GCC_HASH SHA256=f06ae7f3f790fbf0f018f6d40e844451e6bc3b7bc96e128e63b09825c1f8b29f)
 
 # Location to save the downloaded tarballs. Can be overriden from command line.
 set(DOWNLOAD_DIR ${CMAKE_BINARY_DIR}/downloads CACHE PATH "Default download path for tarballs")
@@ -92,7 +92,7 @@ function(toolchain_deps toolchain_deps_dir toolchain_install_dir toolchain_suffi
 
     ExternalProject_add(gmp${suffix}
         URL https://gmplib.org/download/gmp/gmp-6.1.2.tar.bz2
-        URL_HASH SHA256=5275BB04F4863A13516B2F39392AC5E272F5E1BB8057B18AEC1C9B79D73D8FB2
+        URL_HASH SHA256=5275bb04f4863a13516b2f39392ac5e272f5e1bb8057b18aec1c9b79d73d8fb2
         DOWNLOAD_DIR ${DOWNLOAD_DIR}
         CONFIGURE_COMMAND CPPFLAGS=-fexceptions ${compiler_flags} ${wrapper_command} <SOURCE_DIR>/configure
         --build=${build_native}
