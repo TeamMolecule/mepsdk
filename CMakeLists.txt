@@ -257,7 +257,7 @@ ExternalProject_add(gcc-base
 
 ExternalProject_add(libk
     DEPENDS binutils_${build_suffix} gcc-base
-    GIT_REPOSITORY https://github.com/DaveeFTW/libk/
+    GIT_REPOSITORY https://github.com/TeamMolecule/libk/
     GIT_TAG mep
 
 	CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}/${target_arch} -DMEPSDK=${CMAKE_INSTALL_PREFIX}
