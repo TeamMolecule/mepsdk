@@ -1,6 +1,14 @@
 --- gcc/config/mep/mep.c	(revision 231954)
 +++ gcc/config/mep/mep.c	(working copy)
-@@ -2933,7 +2933,7 @@ mep_expand_epilogue (void)
+@@ -196,6 +196,7 @@ static void mep_jmp_return_reorg (rtx_insn *);
+ static void mep_reorg_addcombine (rtx_insn *);
+ static void mep_reorg (void);
+ static void mep_init_intrinsics (void);
++static tree mep_init_builtin_args(const cgen_insn *insn);
+ static void mep_init_builtins (void);
+ static void mep_intrinsic_unavailable (int);
+ static bool mep_get_intrinsic_insn (int, const struct cgen_insn **);
+@@ -2933,7 +2934,7 @@ mep_expand_epilogue (void)
    /* This is backwards so that we restore the control and coprocessor
       registers before the temporary registers we use to restore
       them.  */
@@ -9,7 +17,7 @@
      if (mep_call_saves_register (i))
        {
  	machine_mode rmode;
-@@ -3004,11 +3004,9 @@ mep_expand_epilogue (void)
+@@ -3004,11 +3005,9 @@ mep_expand_epilogue (void)
      emit_insn (gen_mep_enable_int ());
  
    if (mep_prevent_lp_restore)
@@ -24,7 +32,7 @@
      emit_jump_insn (gen_mep_reti ());
    else
      emit_jump_insn (gen_return_internal (gen_rtx_REG (SImode, lp_temp)));
-@@ -3025,6 +3023,8 @@ mep_expand_eh_return (rtx *operands)
+@@ -3025,6 +3024,8 @@ mep_expand_eh_return (rtx *operands)
      }
  
    emit_insn (gen_eh_epilogue (operands[0]));
@@ -33,6 +41,54 @@
  }
  
  void
+@@ -5886,6 +5887,29 @@ mep_cgen_regnum_to_type (enum cgen_regnum_operand_type cr)
+     }
+ }
+ 
++static tree mep_init_builtin_args(const cgen_insn *insn)
++{
++  tree ret_type = void_type_node, args = void_list_node, arg_type;
++  int end = 0, num_args = insn->num_args;
++
++  if (insn->cret_p != 0) {
++    ret_type = mep_cgen_regnum_to_type(insn->regnums[0].type);
++    end = 1;
++    num_args--;
++  }
++
++  if ((insn->num_args - end) != 0)
++    for (int argn = insn->num_args - 1; argn >= end; argn--) {
++      arg_type = mep_cgen_regnum_to_type(insn->regnums[argn].type);
++      if (insn->regnums[argn].reference_p)
++        arg_type = build_pointer_type(arg_type);
++
++      args = tree_cons(NULL_TREE, arg_type, args);
++    }
++
++  return build_function_type(ret_type, args);
++}
++
+ static void
+ mep_init_builtins (void)
+ {
+@@ -5937,16 +5961,12 @@ mep_init_builtins (void)
+     if ((cgen_insns[i].groups & GROUP_KNOWN_CODE) == 0
+ 	&& mep_intrinsic_insn[cgen_insns[i].intrinsic] >= 0)
+       {
+-	tree ret_type = void_type_node;
+ 	tree bi_type;
+ 
+ 	if (i > 0 && cgen_insns[i].intrinsic == cgen_insns[i-1].intrinsic)
+ 	  continue;
+ 
+-	if (cgen_insns[i].cret_p)
+-	  ret_type = mep_cgen_regnum_to_type (cgen_insns[i].regnums[0].type);
+-
+-	bi_type = build_function_type_list (ret_type, NULL_TREE);
++	bi_type = mep_init_builtin_args(&cgen_insns[i]);
+ 	add_builtin_function (cgen_intrinsics[cgen_insns[i].intrinsic],
+ 			      bi_type,
+ 			      cgen_insns[i].intrinsic, BUILT_IN_MD, NULL, NULL);
 --- gcc/ubsan.c    (revision 231954)
 +++ gcc/ubsan.c    (working copy)
 @@ -1471,7 +1471,7 @@
